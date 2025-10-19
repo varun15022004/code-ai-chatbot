@@ -244,5 +244,34 @@ vercel --prod
 4. Push to branch (`git push origin feature/AmazingFeature`)
 5. Open Pull Request
 
+## 🚀 Deployment
+
+This project is ready for deployment on various platforms:
+
+### Quick Deploy Options:
+- **Railway** (Backend) + **Vercel** (Frontend) - Recommended
+- **Heroku** - Traditional PaaS
+- **Docker** - Any container platform
+- **DigitalOcean** - App Platform
+
+### One-Click Deploy:
+```bash
+# With Docker
+docker-compose up --build
+
+# Manual setup
+chmod +x start_production.sh
+./start_production.sh
+```
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
+
+## 🔧 Environment Variables
+
+Copy `.env.example` files and configure:
+- `PINECONE_API_KEY` - For semantic search
+- `GEMINI_API_KEY` - For AI responses
+- `FRONTEND_URL` - Your frontend domain
+
 ## 📄 License
 This project is licensed under the MIT License - see LICENSE file for details.

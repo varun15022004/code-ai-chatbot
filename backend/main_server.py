@@ -466,10 +466,7 @@ def get_analytics_data() -> Dict[str, Any]:
     category_counts = Counter(categories)
     top_categories = dict(sorted(category_counts.items(), key=lambda x: x[1], reverse=True)[:10])
     
-    # Brand analysis
-    brands = [p.get('brand') for p in dataset if p.get('brand')]
-    brand_counts = Counter(brands)
-    top_brands = dict(sorted(brand_counts.items(), key=lambda x: x[1], reverse=True)[:10])
+        # Skip brand analysis for simplified analytics
     
     # Material analysis
     materials = [p.get('material') for p in dataset if p.get('material')]
@@ -498,14 +495,12 @@ def get_analytics_data() -> Dict[str, Any]:
         "overview": {
             "total_products": total_products,
             "unique_categories": len(category_counts),
-            "unique_brands": len(brand_counts),
             "unique_materials": len(material_counts),
             "unique_colors": len(color_counts)
         },
         "price_stats": price_stats,
         "price_distribution": price_ranges,
         "top_categories": top_categories,
-        "top_brands": top_brands,
         "top_materials": top_materials,
         "top_colors": top_colors,
         "data_completeness": completeness,
@@ -850,25 +845,7 @@ async def get_categories():
         logger.error(f"Categories fetch failed: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to fetch categories")
 
-@app.get("/api/brands")
-async def get_brands():
-    """Get all available brands"""
-    try:
-        dataset = load_furniture_dataset()
-        brands = [p.get('brand') for p in dataset if p.get('brand')]
-        brand_counts = Counter(brands)
-        
-        return {
-            "success": True,
-            "data": {
-                "total_brands": len(brand_counts),
-                "brands": dict(sorted(brand_counts.items(), key=lambda x: x[1], reverse=True))
-            }
-        }
-        
-    except Exception as e:
-        logger.error(f"Brands fetch failed: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to fetch brands")
+# Brands endpoint removed for simplified analytics
 
 @app.get("/")
 async def root():
@@ -879,8 +856,7 @@ async def root():
         "docs": "/docs",
         "health": "/health",
         "analytics": "/api/analytics",
-        "categories": "/api/categories",
-        "brands": "/api/brands"
+        "categories": "/api/categories"
     }
 
 if __name__ == "__main__":
@@ -892,4 +868,4 @@ if __name__ == "__main__":
     logger.info(f"Dataset loaded with {len(dataset)} products")
     
     # Start server
-    uvicorn.run(app, host="0.0.0.0", port=8001, log_level="info")
+    uvicorn.run(app, host="127.0.0.1", port=8001, log_level="info")

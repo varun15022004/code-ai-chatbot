@@ -4,7 +4,7 @@ import { Send, Bot, User, Sparkles, Heart, ShoppingCart, Eye, Star } from 'lucid
 import ProductCard from '../components/ProductCard';
 import ProductDetailModal from '../components/ProductDetailModal';
 import LoadingSpinner from '../components/LoadingSpinner';
-import APITest from '../components/APITest';
+// APITest component removed
 import apiService from '../utils/apiService';
 
 const HomePage = () => {
@@ -230,7 +230,7 @@ What furniture are you looking for today?`,
   return (
     <div className="min-h-screen pt-20 pb-8">
       <div className="max-w-6xl mx-auto px-4">
-        <APITest />
+        {/* APITest component removed */}
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
