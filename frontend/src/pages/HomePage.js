@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Bot, User, Sparkles, Heart, ShoppingCart, Eye, Star } from 'lucide-react';
+import { Send, Bot, User, Sparkles } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import ProductDetailModal from '../components/ProductDetailModal';
 import LoadingSpinner from '../components/LoadingSpinner';

@@ -24,7 +24,6 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToWishlist, onAddTo
   if (!product || !isOpen) return null;
 
   const {
-    id,
     title,
     price,
     category,

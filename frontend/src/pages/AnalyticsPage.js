@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   BarChart3, 
@@ -20,118 +20,103 @@ import {
   Cell
 } from 'recharts';
 
+// Helper functions moved outside component for stable references
+const transformApiData = (apiData) => {
+  const { overview, price_stats, price_distribution, top_categories, top_materials } = apiData;
+  const categoryData = Object.entries(top_categories || {}).map(([category, count]) => ({
+    category: category.length > 25 ? category.substring(0, 25) + '...' : category,
+    products: count,
+    percentage: Math.round((count / overview.total_products) * 100),
+    fullName: category
+  })).slice(0, 10);
+  const priceRanges = Object.entries(price_distribution || {}).map(([range, count]) => ({
+    range,
+    count,
+    percentage: Math.round((count / price_stats.products_with_prices) * 100)
+  }));
+  const materialColors = ['#8B4513', '#708090', '#4682B4', '#A0522D', '#32CD32', '#87CEEB', '#DDA0DD', '#F0E68C', '#20B2AA', '#FF6347'];
+  const materialData = Object.entries(top_materials || {}).map(([material, count], index) => ({
+    material,
+    count,
+    color: materialColors[index % materialColors.length]
+  }));
+  return {
+    summary: {
+      totalProducts: overview.total_products,
+      totalCategories: overview.unique_categories,
+      averagePrice: price_stats.avg_price ? price_stats.avg_price.toFixed(2) : '0.00',
+      minPrice: price_stats.min_price ? price_stats.min_price.toFixed(2) : '0.00',
+      maxPrice: price_stats.max_price ? price_stats.max_price.toFixed(2) : '0.00'
+    },
+    categoryData,
+    priceRanges,
+    materialData
+  };
+};
+
+const generateMockAnalytics = () => ({
+  summary: {
+    totalProducts: 312,
+    totalCategories: 25,
+    averagePrice: 287.50,
+    minPrice: 15.99,
+    maxPrice: 2499.99
+  },
+  categoryData: [
+    { category: 'Living Room', products: 78, percentage: 25 },
+    { category: 'Bedroom', products: 65, percentage: 21 },
+    { category: 'Dining Room', products: 54, percentage: 17 },
+    { category: 'Office', products: 43, percentage: 14 },
+    { category: 'Storage', products: 38, percentage: 12 },
+    { category: 'Outdoor', products: 34, percentage: 11 }
+  ],
+  priceRanges: [
+    { range: '$0-100', count: 87, percentage: 28 },
+    { range: '$100-300', count: 112, percentage: 36 },
+    { range: '$300-500', count: 76, percentage: 24 },
+    { range: '$500-1000', count: 28, percentage: 9 },
+    { range: '$1000+', count: 9, percentage: 3 }
+  ],
+  materialData: [
+    { material: 'Wood', count: 89, color: '#8B4513' },
+    { material: 'Metal', count: 67, color: '#708090' },
+    { material: 'Fabric', count: 54, color: '#4682B4' },
+    { material: 'Leather', count: 43, color: '#A0522D' },
+    { material: 'Plastic', count: 32, color: '#32CD32' },
+    { material: 'Glass', count: 27, color: '#87CEEB' }
+  ]
+});
+
 const AnalyticsPage = () => {
   const [analyticsData, setAnalyticsData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchAnalyticsData();
-  }, []);
-
-  const fetchAnalyticsData = async () => {
+  const fetchAnalyticsData = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await fetch('http://localhost:8001/api/analytics');
-      
       if (!response.ok) {
         throw new Error(`Failed to fetch analytics: ${response.status}`);
       }
-      
       const result = await response.json();
-      
       if (result.success) {
         setAnalyticsData(transformApiData(result.data));
       } else {
         throw new Error('API returned error');
       }
-      
     } catch (err) {
       console.error('Failed to fetch analytics:', err);
       setError(err.message);
-      // Fallback to mock data if API fails
       setAnalyticsData(generateMockAnalytics());
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const transformApiData = (apiData) => {
-    // Transform the API response to match the frontend structure
-    const { overview, price_stats, price_distribution, top_categories, top_materials } = apiData;
-    
-    // Convert categories object to array format for charts
-    const categoryData = Object.entries(top_categories || {}).map(([category, count]) => ({
-      category: category.length > 25 ? category.substring(0, 25) + '...' : category,
-      products: count,
-      percentage: Math.round((count / overview.total_products) * 100),
-      fullName: category  // Keep full name for tooltips
-    })).slice(0, 10); // Show top 10 categories
-    
-    // Convert price distribution to array format
-    const priceRanges = Object.entries(price_distribution || {}).map(([range, count]) => ({
-      range,
-      count,
-      percentage: Math.round((count / price_stats.products_with_prices) * 100)
-    }));
-    
-    // Convert materials to array format with colors
-    const materialColors = ['#8B4513', '#708090', '#4682B4', '#A0522D', '#32CD32', '#87CEEB', '#DDA0DD', '#F0E68C', '#20B2AA', '#FF6347'];
-    const materialData = Object.entries(top_materials || {}).map(([material, count], index) => ({
-      material,
-      count,
-      color: materialColors[index % materialColors.length]
-    }));
-    
-    // Removed brands and trends data
-    
-    return {
-      summary: {
-        totalProducts: overview.total_products,
-        totalCategories: overview.unique_categories,
-        averagePrice: price_stats.avg_price ? price_stats.avg_price.toFixed(2) : '0.00',
-        minPrice: price_stats.min_price ? price_stats.min_price.toFixed(2) : '0.00',
-        maxPrice: price_stats.max_price ? price_stats.max_price.toFixed(2) : '0.00'
-      },
-      categoryData,
-      priceRanges,
-      materialData
-    };
-  };
-
-  const generateMockAnalytics = () => ({
-    summary: {
-      totalProducts: 312,
-      totalCategories: 25,
-      averagePrice: 287.50,
-      minPrice: 15.99,
-      maxPrice: 2499.99
-    },
-    categoryData: [
-      { category: 'Living Room', products: 78, percentage: 25 },
-      { category: 'Bedroom', products: 65, percentage: 21 },
-      { category: 'Dining Room', products: 54, percentage: 17 },
-      { category: 'Office', products: 43, percentage: 14 },
-      { category: 'Storage', products: 38, percentage: 12 },
-      { category: 'Outdoor', products: 34, percentage: 11 }
-    ],
-    priceRanges: [
-      { range: '$0-100', count: 87, percentage: 28 },
-      { range: '$100-300', count: 112, percentage: 36 },
-      { range: '$300-500', count: 76, percentage: 24 },
-      { range: '$500-1000', count: 28, percentage: 9 },
-      { range: '$1000+', count: 9, percentage: 3 }
-    ],
-    materialData: [
-      { material: 'Wood', count: 89, color: '#8B4513' },
-      { material: 'Metal', count: 67, color: '#708090' },
-      { material: 'Fabric', count: 54, color: '#4682B4' },
-      { material: 'Leather', count: 43, color: '#A0522D' },
-      { material: 'Plastic', count: 32, color: '#32CD32' },
-      { material: 'Glass', count: 27, color: '#87CEEB' }
-    ],
-    // Removed topBrands and monthlyTrends
-  });
+  useEffect(() => {
+    fetchAnalyticsData();
+  }, [fetchAnalyticsData]);
 
   if (isLoading) {
     return (

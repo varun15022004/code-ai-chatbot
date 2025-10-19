@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Home, BarChart3, Bot, Sparkles } from 'lucide-react';
+import { BarChart3, Bot, Sparkles } from 'lucide-react';
 
 const Navigation = () => {
   const location = useLocation();

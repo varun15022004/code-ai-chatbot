@@ -5,7 +5,6 @@ import HighlightText from './HighlightText';
 
 const ProductCard = ({ product, onAddToWishlist, onAddToCart, onViewProduct, isInWishlist, searchTerms = [] }) => {
   const {
-    id,
     title,
     price,
     category,
