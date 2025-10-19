@@ -19,6 +19,7 @@ import {
   Pie,
   Cell
 } from 'recharts';
+import apiService from '../utils/apiService';
 
 // Helper functions moved outside component for stable references
 const transformApiData = (apiData) => {
@@ -95,11 +96,7 @@ const AnalyticsPage = () => {
   const fetchAnalyticsData = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('http://localhost:8001/api/analytics');
-      if (!response.ok) {
-        throw new Error(`Failed to fetch analytics: ${response.status}`);
-      }
-      const result = await response.json();
+      const result = await apiService.getAnalytics();
       if (result.success) {
         setAnalyticsData(transformApiData(result.data));
       } else {
