@@ -22,5 +22,5 @@ ENV HOST=0.0.0.0
 ENV PORT=10000
 EXPOSE 10000
 
-# Start app with uvicorn binding to 0.0.0.0:$PORT
-CMD ["uvicorn", "main_server:app", "--host", "0.0.0.0", "--port", "$PORT", "--log-level", "info"]
+# Start app with uvicorn binding to 0.0.0.0:$PORT (Shell form so $PORT expands)
+CMD uvicorn main_server:app --host 0.0.0.0 --port $PORT --log-level info
