@@ -860,12 +860,15 @@ async def root():
     }
 
 if __name__ == "__main__":
+    import os
     import uvicorn
-    
+
     # Load dataset on startup
     logger.info("Loading furniture dataset...")
     dataset = load_furniture_dataset()
     logger.info(f"Dataset loaded with {len(dataset)} products")
-    
-    # Start server
-    uvicorn.run(app, host="127.0.0.1", port=8001, log_level="info")
+
+    # Start server (Render expects 0.0.0.0:$PORT)
+    host = os.getenv("HOST", "0.0.0.0")
+    port = int(os.getenv("PORT", "8001"))
+    uvicorn.run(app, host=host, port=port, log_level="info")

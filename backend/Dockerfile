@@ -20,12 +20,13 @@ COPY ../data /app/data
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
 
-# Expose port
-EXPOSE 8001
+# Expose port (Render defaults to 10000)
+ENV PORT=10000
+EXPOSE 10000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8001/health || exit 1
+    CMD curl -f http://localhost:$PORT/health || exit 1
 
-# Run the application
-CMD ["python", "main_server.py"]
+# Run the application with uvicorn binding to 0.0.0.0:$PORT
+CMD ["uvicorn", "main_server:app", "--host", "0.0.0.0", "--port", "$PORT", "--log-level", "info"]

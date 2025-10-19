@@ -17,10 +17,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ ./
 COPY data /app/data
 
-# Env and port
+# Env and port (Render defaults to 10000)
 ENV HOST=0.0.0.0
-ENV PORT=8001
-EXPOSE 8001
+ENV PORT=10000
+EXPOSE 10000
 
-# Start app
-CMD ["python", "main_server.py"]
+# Start app with uvicorn binding to 0.0.0.0:$PORT
+CMD ["uvicorn", "main_server:app", "--host", "0.0.0.0", "--port", "$PORT", "--log-level", "info"]
