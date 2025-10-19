@@ -17,7 +17,7 @@ if __name__ == "__main__":
     print(f"Dataset loaded with {len(dataset)} products")
 
     host = os.getenv("HOST", "0.0.0.0")
-    port = int(os.getenv("PORT", "8001"))
+    port = int(os.getenv("PORT", "10000"))
     print(f"Starting server on http://{host}:{port}")
     print(f"API docs available at http://{host}:{port}/docs")
     print("Press Ctrl+C to stop the server")

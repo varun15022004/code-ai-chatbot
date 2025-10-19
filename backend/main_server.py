@@ -870,5 +870,5 @@ if __name__ == "__main__":
 
     # Start server (Render expects 0.0.0.0:$PORT)
     host = os.getenv("HOST", "0.0.0.0")
-    port = int(os.getenv("PORT", "8001"))
+    port = int(os.getenv("PORT", "10000"))
     uvicorn.run(app, host=host, port=port, log_level="info")
